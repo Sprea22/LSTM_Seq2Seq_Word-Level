@@ -31,41 +31,6 @@ def sentences_pre_processing(lines):
 
     return lines
 
-def decode_sequence(input_seq):
-    # Encode the input as state vectors.
-    states_value = encoder_model.predict(input_seq)
-    # Generate empty target sequence of linpth 1.
-    target_seq = np.zeros((1,1))
-    # Populate the first character of target sequence with the start character.
-    target_seq[0, 0] = target_token_index['START_']
-
-    # Sampling loop for a batch of sequences
-    # (to simplify, here we assume a batch of size 1).
-    stop_condition = False
-    decoded_sentence = ''
-    while not stop_condition:
-        output_tokens, h, c = decoder_model.predict(
-            [target_seq] + states_value)
-
-        # Sample a token
-        sampled_token_index = np.argmax(output_tokens[0, -1, :])
-        sampled_char = reverse_target_char_index[sampled_token_index]
-        decoded_sentence += ' '+sampled_char
-
-        # Exit condition: either hit max linpth
-        # or find stop character.
-        if (sampled_char == '_END' or
-           len(decoded_sentence) > 52):
-            stop_condition = True
-
-        # Update the target sequence (of linpth 1).
-        target_seq = np.zeros((1,1))
-        target_seq[0, 0] = sampled_token_index
-
-        # Update states
-        states_value = [h, c]
-
-    return decoded_sentence
 
 # Reading the input - output sentences
 lines= pd.read_table('test.txt', sep="___", names=['inp', 'out'])
@@ -161,7 +126,7 @@ model.summary()
 # Fit the model
 model.fit([encoder_input_data, decoder_input_data], decoder_target_data,
           batch_size=128,
-          epochs=500,
+          epochs=50,
           validation_split=0.20)
 
 encoder_model = Model(encoder_inputs, encoder_states)
@@ -179,14 +144,10 @@ decoder_states2 = [state_h2, state_c2]
 decoder_outputs2 = decoder_dense(decoder_outputs2)
 decoder_model = Model([decoder_inputs] + decoder_states_inputs, [decoder_outputs2] + decoder_states2)
 
+### ### ### ### ### ### ### #
+# SAVING THE TRAINED MODELS #
+### ### ### ### ### ### ### #
 
-### ### ### ### ####
-# MODEL INFERENCES #
-### ### ### ### ####
+encoder_model.save('encoder_model.h5')  
+decoder_model.save('decoder_model.h5')  
 
-for seq_index in range(0,11):
-    input_seq = encoder_input_data[seq_index: seq_index + 1]
-    decoded_sentence = decode_sequence(input_seq)
-    print('-')
-    print('Input sentence:', lines.inp[seq_index: seq_index + 1])
-    print('Decoded sentence:', decoded_sentence)

@@ -6,6 +6,6 @@ line chart ascendant___A line chart with an increasing trend
 line chart ascendant___The trend of the line chart is ascendant
 line chart ascendant___It is a line chart with an ascendant trend
 line chart descendant___It's a line chart with a descendant trend
-line chart descendant___The following chart describes an descendant line chart
+line chart descendant___The following chart describes a descendant line chart
 line chart descendant___The following chart reports a decreasing trend
 line chart descendant___A line chart with a descreasing trend
