@@ -31,7 +31,6 @@ def sentences_pre_processing(lines):
 
     return lines
 
-
 # Reading the input - output sentences
 lines= pd.read_table('test.txt', sep="___", names=['inp', 'out'])
 
